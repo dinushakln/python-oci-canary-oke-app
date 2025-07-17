@@ -1,57 +1,93 @@
+from typing import Optional
 from fastapi import FastAPI
 import os
+import datetime
 import random
-from datetime import datetime
 
-app = FastAPI(title="Love Express", version="1.0.1")
+# Initialize the FastAPI application
+app = FastAPI(
+    title="OCI DevOps Demo API",
+    description="A fun and engaging FastAPI application for OCI DevOps demos!",
+    version="1.0.0"
+)
 
-# Fun messages with emojis
-LOVE_MESSAGES = [
-    "You're the kubectl to my cluster ❤️",
-    "My heart pings your IP 💘",
-    "Our connection has 0% packet loss 💞",
-    "You're my favorite endpoint 😍",
-    "I'm 200 OK when I'm with you 💖",
-    "Let's deploy our love together 💑"
+# Simulate a request counter (for demo purposes)
+requests_served_count = 0
+
+# List of fun facts or demo tips
+FUN_FACTS = [
+    "Did you know serverless functions scale automatically? ✨",
+    "This API is powered by FastAPI and OCI Functions! 🚀",
+    "DevOps makes deployment a breeze! 💨",
+    "Keep calm and code on! 💻",
+    "Your feedback helps us grow! 🌱",
+    "Exploring the cloud, one function at a time! ☁️"
 ]
 
-# Deployment facts for the /about route
-DEPLOYMENT_FACTS = [
-    "Kubernetes was named after a Greek helmsman",
-    "The first container ship sailed in 1956",
-    "Over 5.6 million developers use GitHub",
-    "80% of enterprises use cloud-native tech",
-    "The cloud weighs more than 1 million elephants! ☁️🐘"
-]
+@app.get("/")
+def read_root():
+    """
+    Root endpoint providing a fun welcome message, version, namespace,
+    current server time, and a random fun fact.
+    """
+    global requests_served_count
+    requests_served_count += 1
 
-@app.get("/", tags=["Love API"])
-def send_love():
-    """Send some DevOps love with Kubernetes context!"""
+    # Get version from environment or default
+    version = os.getenv('APP_VERSION', default='1.0.0')
+    # Get namespace from environment or default
+    namespace = os.getenv('POD_NAMESPACE', default='demo-namespace')
+    # Get current server time
+    current_time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
     return {
-        "message": random.choice(LOVE_MESSAGES),
-        "version": app.version,
-        "namespace": os.getenv('POD_NAMESPACE', 'ns-red'),
-        "pod": os.getenv('POD_NAME', 'unknown-pod'),
-        "timestamp": datetime.utcnow().isoformat(),
-        "secret": "You're awesome! 😎",
-        "emoji": random.choice(["💻", "🚀", "🐳", "🔑", "🎯", "🌈"])
+        "message": "Hello, Cloud Explorer! Welcome to your OCI DevOps adventure! 🌟",
+        "version": version,
+        "namespace": namespace,
+        "server_time_utc": current_time,
+        "fun_fact": random.choice(FUN_FACTS),
+        "requests_served_since_startup": requests_served_count
     }
 
-@app.get("/about", tags=["Info"])
-def deployment_info():
-    """Fun facts about deployments"""
+@app.get("/greet/{name}")
+def greet_user(name: str):
+    """
+    Endpoint to greet a user by name.
+    """
+    global requests_served_count
+    requests_served_count += 1
+
     return {
-        "cloud_provider": "OCI",
-        "service": "DevOps",
-        "fun_fact": random.choice(DEPLOYMENT_FACTS),
-        "architecture": os.getenv('HOSTNAME', 'unknown-arch')
+        "message": f"Hey there, {name}! It's awesome to see you! 👋",
+        "requests_served_since_startup": requests_served_count
     }
 
-@app.get("/health", tags=["Health Check"])
-def health_check():
-    """Always healthy with extra love!"""
+@app.get("/status")
+def get_status():
+    """
+    Health check endpoint providing application status and simulated metrics.
+    """
+    global requests_served_count
+    requests_served_count += 1
+
+    version = os.getenv('APP_VERSION', default='1.0.0')
+    namespace = os.getenv('POD_NAMESPACE', default='demo-namespace')
+    current_time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
     return {
-        "status": "💚 Green",
-        "uptime": "∞",
-        "message": "System is overflowing with love!"
+        "status": "UP",
+        "service_name": "OCI DevOps Health Checker",
+        "version": version,
+        "namespace": namespace,
+        "last_checked_at_utc": current_time,
+        "requests_processed": requests_served_count,
+        "health_details": {
+            "database_connection": "OK",
+            "external_api_reachability": "OK"
+        }
     }
+
+# Example of how to run this locally for testing:
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="0.0.0.0", port=8000)
