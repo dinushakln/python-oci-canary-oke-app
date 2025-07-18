@@ -35,6 +35,18 @@ steps:
       echo "BUILDRUN_HASH: " $BUILDRUN_HASH
       
 
+env:
+  vaultVariables:
+    DOCKER_USERNAME: ocid1.vaultsecret.oc1.iad.amaaaaaavrxjjqyakq5sbcb5ah5ac5u3nkqhtoahxk7d7s3ahfoeadtmqncq
+    DOCKER_PASSWORD: ocid1.vaultsecret.oc1.iad.amaaaaaavrxjjqyamixui3ef6xud33ahzjbxsa356qokx34x7kbsgd6ntapq
+
+steps:
+  - type: Command
+    name: "Docker Login"
+    timeoutInSeconds: 60
+    command: |
+      echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
   - type: Command
     timeoutInSeconds: 1200
     name: "Build container image"
