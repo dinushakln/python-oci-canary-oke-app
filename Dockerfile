@@ -1,4 +1,4 @@
-FROM python
+FROM container-registry.oracle.com/os/oraclelinux:8-slim
 
 WORKDIR /code
 
