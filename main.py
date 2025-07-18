@@ -3,7 +3,7 @@ import os
 import random
 from datetime import datetime
 
-app = FastAPI(title="Love Express", version="1.0.3")
+app = FastAPI(title="Love Express", version="1.0.4")
 
 # Fun messages with emojis
 LOVE_MESSAGES = [
